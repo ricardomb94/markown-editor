@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,
+  initial-scale=1.0">
+  <meta
+  http-equiv="Content-Security-Policy"
+  content="script-src 'self' 'unsafe-inline';"
+  />
+  <title>Markdon-editor</title>
+  <link rel="stylesheet" href="./node_modules/simplemde/dist/simplemde.min.css">
+  <script src="./node_modules/simplemde/dist/simplemde.min.js"></script>
+  <style>
+    html, body {
+    height: 100%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    /* background: rgb(240, 226, 30); */
+    background: rgb(255, 255, 255);
+    }
+
+    .CodeMirror {
+    flex: 1;
+    }
+    </style>
+</head>
+<body>
+  <textarea id="editor"></textarea>
+
+  <script>
+    var editor = new SimpleMDE({
+    element: document.getElementById('editor')
+    });
+
+    const { ipcRenderer } = require('electron');
+    // const { BrowserWindow } = require('electron');
+
+    ipcRenderer.on('editor-event', (event, arg) => {
+    console.log(arg);
+    event.sender.send('editor-reply', `Received ${arg}`);
+
+      if (arg === 'toggle-bold' || arg === 'toggle-italic' || arg === 'toggle-strikethrough') {
+        editor.toggleBold();
+        editor.toggleItalic();
+        editor.toggleStrikethrough();
+      }
+    });
+
+    ipcRenderer.send('editor-reply', 'Page Loaded');
+
+  </script>
+</body>
+</html>
